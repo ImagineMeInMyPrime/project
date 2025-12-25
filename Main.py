@@ -364,3 +364,4 @@ help_button = ctk.CTkButton(root, text="?", width=35, height=35, corner_radius=3
 help_button.place(x=750, y=20)
 
 root.mainloop()
+#круто
