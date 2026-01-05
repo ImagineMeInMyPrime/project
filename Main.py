@@ -198,13 +198,26 @@ def add_service_to_file(service_name):
             f.write(service_name + "\n")
         for frame in service_frames:
             frame['service_box'].configure(values=services_list)
+def filter_services(search_text):
+    search_text = search_text.lower()
+    return [s for s in services_list if search_text in s.lower()]
 
 def add_service_row(service_name="", price=""):
     frame = ctk.CTkFrame(services_container, corner_radius=10, fg_color="#ffffff")
     frame.pack(fill="x", pady=5)
     service_var = ctk.StringVar(value=service_name)
+
     service_box = ctk.CTkComboBox(frame, variable=service_var, values=services_list, width=250)
     service_box.pack(side="left", padx=5, pady=5)
+
+    def on_service_typing(event):
+        text = service_var.get()
+        filtered = filter_services(text)
+        if filtered:
+            service_box.configure(values=filtered)
+
+    service_box.bind("<KeyRelease>", on_service_typing)
+
     price_entry = ctk.CTkEntry(frame, width=100)
     price_entry.pack(side="left", padx=5, pady=5)
     price_entry.insert(0, price)
@@ -243,7 +256,7 @@ def save_receipt():
     if not os.path.exists(csv_file):
         with open(csv_file, "w", encoding="utf-8", newline="") as f:
             writer = csv.writer(f)
-            writer.writerow(["Datum", "Číslo pokladny", "Číslo účtenky", "Služba", "Cena (bez DPH)", "DPH 21%", "Cena s DPH"])
+            writer.writerow(["Datum", "Číslo pokladny", "Číslo účtenky", "Nazev služby", "Cena (bez DPH)", "DPH 21%", "Cena s DPH"])
     items_for_print = []
     total = 0
     for frame in service_frames:
